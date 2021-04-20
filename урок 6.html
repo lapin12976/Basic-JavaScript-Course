@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+
+
+    <!-- ----------------------------------- -->
+
+    <!-- К сожалению самому не получилось придумать полностью функционирующий код, 
+    но по вашему примеру разобрался и написал, только теперь он сильно похож на ваш. -->
+
+
+    <!-- ----------------------------------- -->
+
+
+
+
+    <h2>Каталог:</h2>
+    <div class="catalog"></div>
+    <hr>
+    <h2>Корзина:</h2>
+    <div class="basket"></div>
+    <button class="clr-basket">Очистить корзину</button>
+    <script>
+        // 1. Доработать модуль корзины.
+        // a.Добавлять в объект корзины выбранные товары по клику на кнопке «Купить» без перезагрузки страницы
+        // b.Привязать к событию покупки товара пересчет корзины и обновление ее внешнего вида
+
+        const catalog = {
+            catalogBlock: null,
+            basket: {},
+            catalog: [
+                {
+                    id_product: 1,
+                    product_name: 'монитор',
+                    company: 'sumsung',
+                    price: 9990,
+                    resolution: '3840 x 2160',
+                    color: 'black',
+                    count: 10,
+                },
+                {
+                    id_product: 2,
+                    product_name: 'мышь',
+                    company: 'lg',
+                    price: 990,
+                    color: 'white',
+                    connection: 'wireless',
+                    count: 10,
+                },
+                {
+                    id_product: 3,
+                    product_name: 'клавиатура',
+                    company: 'dexp',
+                    price: 1490,
+                    color: 'white',
+                    count: 10,
+                },
+                {
+                    id_product: 4,
+                    product_name: 'видеокарта',
+                    company: 'nvivia',
+                    price: 3990,
+                    count: 10,
+                },
+                {
+                    id_product: 5,
+                    product_name: 'оперативная память',
+                    company: 'nvivia',
+                    price: 3490,
+                    count: 10,
+                },
+                {
+                    id_product: 6,
+                    product_name: 'коврик',
+                    company: 'dexp',
+                    price: 490,
+                    color: 'black',
+                    count: 10,
+                },
+            ],
+
+            init(catalogBlockClass, basket) {
+                this.catalogBlock = document.querySelector(`.${catalogBlockClass}`);
+                this.basket = basket;
+                this.render();
+                this.addEventHandlers();
+            },
+
+            render() {
+                if (this.getCatalogListLength() > 0) this.renderCatalogList();
+                else this.renderEmptyCatalog();
+            },
+
+            addEventHandlers() {
+                this.catalogBlock.addEventListener('click', event => this.addToBasket(event));
+            },
+
+            addToBasket(event) {
+                if (!event.target.classList.contains('product__add-to-basket')) return;
+                const id_product = +event.target.dataset.id_product;
+                const productToAdd = this.catalog.find((product) => product.id_product === id_product);
+                this.basket.addToBasket(productToAdd);
+            },
+
+            getCatalogListLength() {
+                return this.catalog.length;
+            },
+
+            renderCatalogList() {
+                this.catalogBlock.innerHTML = '';
+                this.catalog.forEach(item => {
+                    this.catalogBlock.insertAdjacentHTML('beforeend', this.renderCatalogItem(item));
+                });
+            },
+
+            renderCatalogItem(item) {
+                return `<div class="product">
+                <h3>${item.product_name}</h3>
+                <p>${item.price} руб.</p>
+                <button class="product__add-to-basket" data-id_product="${item.id_product}">В корзину</button>
+            </div>`;
+            },
+
+            renderEmptyCatalog() {
+                this.catalogBlock.innerHTML = '';
+                this.catalogBlock.insertAdjacentHTML('beforeend', `Каталог товаров пуст.`);
+            },
+        };
+
+        const basket = {
+            basketBlock: null,
+            clrBasketButton: null,
+            goods: [],
+
+
+            init(basketBlockClass, clrBasketButton) {
+                this.basketBlock = document.querySelector(`.${basketBlockClass}`);
+                this.clrBasketButton = document.querySelector(`.${clrBasketButton}`);
+                this.addEventHandlers();
+                this.render();
+            },
+
+            addEventHandlers() {
+                this.clrBasketButton.addEventListener('click', this.dropCart.bind(this));
+            },
+
+            dropCart() {
+                this.goods = [];
+                this.render();
+            },
+
+            render() {
+                if (this.getBasketGoodsLength() > 0) this.renderBasketList();
+                else this.renderEmptyBasket();
+            },
+
+            addToBasket(product) {
+
+                if (product) {
+                    const findInBasket = this.goods.find(({ id_product }) => product.id_product === id_product);
+                    if (findInBasket) findInBasket.quantity++;
+                    else this.goods.push({ ...product, quantity: 1 });
+                    this.render();
+                } else {
+                    alert('Ошибка добавления!');
+                }
+            },
+
+            getBasketGoodsLength() {
+                return this.goods.length;
+            },
+
+            renderEmptyBasket() {
+                this.basketBlock.innerHTML = '';
+                this.basketBlock.insertAdjacentHTML('beforeend', 'Корзина пуста.');
+            },
+
+            renderBasketList() {
+                this.basketBlock.innerHTML = '';
+                this.goods.forEach(item => {
+                    this.basketBlock.insertAdjacentHTML('beforeend', this.renderBasketItem(item));
+                });
+            },
+
+            renderBasketItem(item) {
+                return `<div>
+                <h3>${item.product_name}</h3>
+                <p>${item.price} руб.</p>
+                <p>${item.quantity} шт.</p>
+            </div>`;
+            },
+        };
+
+        catalog.init('catalog', basket);
+        basket.init('basket', 'clr-basket');
+
+    </script>
+</body>
+
+</html>
