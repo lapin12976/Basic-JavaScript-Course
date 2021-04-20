@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+
+    <script>
+        // 1. Создать функцию, генерирующую шахматную доску. При этом можно использовать любые html-теги по своему желанию. Доска должна быть разлинована соответствующим образом, т.е. чередовать черные и белые ячейки. Строки должны нумероваться числами от 1 до 8, столбцы – латинскими буквами A, B, C, D, E, F, G, H.
+
+        function tableCreate() {
+            let body = document.body;
+            let tbl = document.createElement('table');
+            tbl.id = 'chess'
+            let abc = 'ABCDEFGH'
+            tbl.style.width = '400px';
+            for (let i = 0; i < 10; i++) {
+                let tr = tbl.insertRow();
+                for (let j = 0; j < 10; j++) {
+                    let td = tr.insertCell();
+                    td.style.border = '1px solid black';
+                    td.style.textAlign = 'center'
+                    td.className = 'chessId'
+                    if (i == 0 && j != 0 && j != 9) td.appendChild(document.createTextNode(j));
+                    if (j == 0 && i != 0 && i != 9) td.appendChild(document.createTextNode(abc[i - 1]));
+                    if (i == 9 && j != 0 && j != 9) td.appendChild(document.createTextNode(j));
+                    if (j == 9 && i != 0 && i != 9) td.appendChild(document.createTextNode(abc[i - 1]));
+                    if (i != 0 && i != 9 && j != 0 && j != 9) {
+                        if (i % 2 === 0 && j % 2 != 0) td.style.backgroundColor = 'black';
+                        if (i % 2 != 0 && j % 2 === 0) td.style.backgroundColor = 'black';
+                    }
+                }
+            }
+            body.appendChild(tbl);
+        }
+        tableCreate();
+
+        // 3. Сделать генерацию корзины динамической: верстка корзины не должна находиться в HTML-структуре. Там должен быть только div, в который будет вставляться корзина, сгенерированная на базе JS:
+        // 3.1. Пустая корзина должна выводить строку «Корзина пуста»;
+        // 3.2. Наполненная должна выводить «В корзине: n товаров на сумму m рублей».
+
+        let product = {
+            'монитор': {
+                company: 'sumsung',
+                price: 9990,
+                resolution: '3840 x 2160',
+                color: 'black',
+                count: 10,
+            },
+            'мышь': {
+                company: 'lg',
+                price: 990,
+                color: 'white',
+                connection: 'wireless',
+                count: 10,
+            },
+            'клавиатура': {
+                company: 'dexp',
+                price: 1490,
+                color: 'white',
+                count: 10,
+            },
+            'видеокарта': {
+                company: 'nvivia',
+                price: 3990,
+                count: 10,
+            },
+            'оперативная память': {
+                company: 'nvivia',
+                price: 3490,
+                count: 10,
+            },
+            'коврик': {
+                company: 'dexp',
+                price: 490,
+                color: 'black',
+                count: 10,
+            },
+        }
+        let basket = [
+            {
+                id_product: 1,
+                product_name: 'монитор',
+                price: product['монитор'].price,
+                count: 3,
+            },
+            {
+                id_product: 2,
+                product_name: 'мышь',
+                price: product['мышь'].price,
+                count: 2,
+            },
+            {
+                id_product: 3,
+                product_name: 'клавиатура',
+                price: product['клавиатура'].price,
+                count: 5,
+            },
+            {
+                id_product: 4,
+                product_name: 'видеокарта',
+                price: product['видеокарта'].price,
+                count: 7,
+            },
+            {
+                id_product: 5,
+                product_name: 'оперативная память',
+                price: product['оперативная память'].price,
+                count: 8,
+            },
+            {
+                id_product: 6,
+                product_name: 'коврик',
+                price: product['коврик'].price,
+                count: 2,
+            },
+        ]
+        function totalPrice() {
+            let summ = 0;
+            let count = 0;
+            for (let i in basket) {
+                summ = basket[i].price * basket[i].count + summ;
+                count += 1;
+            };
+            return [summ, count];
+        }
+        function cart() {
+            let body = document.body;
+            let div = document.createElement('div');
+            if (!basket.length) {
+                div.appendChild(document.createElement('p')).appendChild(document.createTextNode('Корзина пуста'));
+                body.appendChild(div);
+                return;
+            };
+            for (let i in basket) {
+                let p = document.createElement('p');
+                div.appendChild(p);
+                p.appendChild(document.createTextNode(basket[i].product_name + ': колличество: ' + basket[i].count + ' цена: ' + basket[i].price * basket[i].count));
+            };
+            div.appendChild(document.createElement('p')).appendChild(document.createTextNode('В корзине: ' + totalPrice()[1] + ' товаров на сумму ' + totalPrice()[0] + ' рублей'));
+            div.appendChild(document.createElement('p')).appendChild(document.createTextNode('Итого к оплате: ' + totalPrice()[0] + ' рублей'));
+            return body.appendChild(div);
+        }
+        cart();
+
+    </script>
+</body>
+
+</html>
